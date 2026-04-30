@@ -180,6 +180,9 @@ class gaussian_beam:
 def find_norm(vec):
     return np.abs(vec[0, 0]) ** 2 + np.abs(vec[1, 0]) ** 2
 def main():
+    from my_logging import configure_logging
+    configure_logging()
+    logger.info('Runngin gaussian_beam_slice.py as __main__.')
     print(gaussian_beam(256e-9, 10e-9, 1, 0.1e-3))
 
 
