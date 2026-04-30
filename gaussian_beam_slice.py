@@ -23,6 +23,7 @@ class gaussian_beam:
         self.q_z = self.beam_param()
         self.I_max = self.max_intensity()
         self.vec = np.array([[self.hpol],[self.vpol]])
+        self.gouy = self.gouy_phase()
 
     def __str__(self):
         width = 50
@@ -50,6 +51,7 @@ class gaussian_beam:
         string += add_line(self, 'w_z', unit='mm', scale=1e3)
         string += add_line(self, 'R_z', unit='m')
         string += add_line(self, 'I_max', unit='W/m2')
+        string += add_line(self, 'gouy')
         string += midline
         string += add_line(self, 'q_z')
         string += midline
@@ -83,7 +85,12 @@ class gaussian_beam:
 
     def max_intensity(self):
         """Calculate the maximum intensity of the gaussian beam."""
-        return 2 * self.power_avg / (np.pi * self.w_z ** 2)
+
+    def gouy_phase(self):
+        """Calculate the gouy phase of the beam."""
+        gouy = np.arctan(self.z_from_w_0 / self.z_R)
+        logger.debug(f'Calculate {gouy=}')
+        return gouy
 
     def reproduce_dict(self):
         """This creates a dictionary which can re-create the current instance."""
