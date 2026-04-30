@@ -86,26 +86,6 @@ class optical_layout:
             self.df.at[index, 'power_avg_final'] = new_beam.power_avg
         logger.info('Finished row calculations')
                 
-def scatter_color(df):
-    vec = df.final_pol_vec
-    out_color = []
-    for index in range(len(df.index)):
-        vec = df.at[index, 'final_pol_vec']
-        a = abs(vec[0, 0])**2
-        b = abs(vec[1, 0]) ** 2
-        out_color.append( (a, 0, b))
-    return out_color
-
-def plot_optical_layout(ol, size_scale=100):
-    fig, ax = plt.subplots()
-    ax.scatter(ol.df.z, ol.df.w_z_final * 1e3, 
-               c=scatter_color(ol.df),
-               s=ol.df.power_avg_final * size_scale)
-    ax.set_xlabel('Beam distance (m)')
-    #ax.set_yscale('log')
-    ax.set_ylabel('Spot size (mm)')
-    ax.grid(True)
-    plt.show()
 
 def sim_setup():
     initiate_data()
@@ -124,14 +104,13 @@ def sim_setup():
 
     ol = optical_layout(gauss, element_set)
 
-    plot_optical_layout(ol)
 
 
 def main():
 
     from my_logging import configure_logging
     configure_logging()
-    logger.info('Running gaussian_beam.py as __main__')
+    logger.info('Running layout.py as __main__')
     sim_setup()
 if __name__ == '__main__':
     main()
