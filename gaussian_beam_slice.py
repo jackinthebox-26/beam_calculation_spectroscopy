@@ -65,26 +65,39 @@ class gaussian_beam:
 
     def rayleigh_range(self):
         """ Calculate the rayleigh range from the wavelength and beam waist."""
-        return np.pi * self.w_0 ** 2  / self.wavelength_center
+        z_R = np.pi * self.w_0 ** 2  / self.wavelength_center
+        logger.debug(f'Calculate {z_R=}')
+        return z_R
 
     def spot_size(self):
         """ Calculate the beam spot size using the beam waist, rayleigh range, and location."""
-        return self.w_0 * np.sqrt(1+ (self.z_from_w_0/self.z_R)**2)
+        w_z = self.w_0 * np.sqrt(1+ (self.z_from_w_0/self.z_R)**2)
+        logger.debug(f'Calculate {w_z=}')
+        return w_z
 
     def radius_of_curvature(self):
         """Calculate the radius of curvature using the rayleigh range and location."""
         if self.z_from_w_0 != 0:
-            return self.z_from_w_0 * (1 + (self.z_R / self.z_from_w_0) ** 2)
+            R = self.z_from_w_0 * (1 + (self.z_R / self.z_from_w_0) ** 2)
         else:
-            return np.inf
+            logger.debug('Divide by zero issue resolved')
+            R = np.inf
+        logger.debug(f'Calculate {R=}')
+        return R
+
 
     def beam_param(self):
         """Calculate the beam parameter using the rayleigh range and location."""
-        return self.z_from_w_0 + self.z_R * 1j
+        q = self.z_from_w_0 + self.z_R * 1j
+        logger.debug(f'Calculate {q=}')
+        return q
 
 
     def max_intensity(self):
         """Calculate the maximum intensity of the gaussian beam."""
+        I = 2 * self.power_avg / (np.pi * self.w_z ** 2)
+        logger.debug(f'Calculate {I=}')
+        return I
 
     def gouy_phase(self):
         """Calculate the gouy phase of the beam."""
@@ -189,7 +202,7 @@ def find_norm(vec):
 def main():
     from my_logging import configure_logging
     configure_logging()
-    logger.info('Runngin gaussian_beam_slice.py as __main__.')
+    logger.info('Running gaussian_beam_slice.py as __main__.')
     print(gaussian_beam(256e-9, 10e-9, 1, 0.1e-3))
 
 
