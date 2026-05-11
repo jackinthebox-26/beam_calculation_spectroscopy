@@ -38,6 +38,7 @@ class optical_layout:
     def __post_init__(self):
         self.df = self.init_df()
         self.row_calcs()
+        self.make_flat_df()
     
     def init_df(self):
         """This method initiates the dataframe from the element set. """
@@ -87,6 +88,63 @@ class optical_layout:
 
             self.df.at[index, 'power_avg_final'] = new_beam.power_avg
         logger.info('Finished row calculations')
+
+    def make_flat_df(self):
+        step = 0.005
+        logger.info('Creating flat dataframe.')
+        z_lst = np.array(self.df.z)
+        dz_lst = np.array(self.df.width)
+        element_lst = self.df.element
+        beam_start_lst = self.df.init_beam_profile
+        index_lst = self.df.index
+
+        # FIRST THING
+        z_flat = []
+        w_z_flat = []
+        z_from_w_0_flat = []
+        tau_fwhm = []
+        max_intensity = []
+
+
+        for index, dz, z, element in zip(index_lst, dz_lst, z_lst, element_lst):
+            series = self.df.iloc[index]
+            logger.debug(f'{series=}')
+            w_0 = series['w_0']
+            z_from_w_0_start = series['z_from_w_0_start']
+
+            lambda_0 = beam_start_lst[index].wavelength_center
+            if element.width > 0:
+                z_calcs = np.arange(0, dz, step)
+                if np.max(np.shape(z_calcs)) < 1:
+                    z_calcs = [0]
+                if z_calcs[-1] > element.width:
+                    z_calcs[-1]=element.width
+
+                w_z_calc = np.zeros(np.shape(z_calcs))
+                for i, z_rel in enumerate(z_calcs):
+                    w_z_calc[i] = gauss_envelope(w_0, z_from_w_0_start+z_rel, lambda_0)
+                logger.info(f'{w_z_calc[i]=:.3e}, {z_rel=:.3e}, {z_from_w_0_start=:.3e}, {z + z_calcs[i] =}, {str(element).split('(')[0]}')
+
+                # SECOND THING
+                w_z_flat.extend(w_z_calc)
+                z_flat.extend(z + z_calcs)
+                tau_fwhm.extend(np.ones(np.shape(z_calcs)) * self.df.at[index, 'tau_fwhm_init'])
+                max_intensity.extend(np.ones(np.shape(z_calcs)) * self.df.at[index, 'max_intensity'])
+            else:
+
+                # THIRD THING
+                z_flat.append(z)
+                w_z_flat.append(self.df.at[index, 'w_z_start'])
+                tau_fwhm.extend(np.ones(np.shape(z_calcs)) * self.df.at[index, 'tau_fwhm_init'])
+                max_intensity.extend(np.ones(np.shape(z_calcs)) * self.df.at[index, 'max_intensity'])
+
+        plt.plot(z_flat, w_z_flat, '.')
+        plt.savefig('test.png')
+                            # FOURTH THING
+        flat_df = pd.DataFrame({'z': z_flat, 'w_z': w_z_flat, 'tau_fwhm': tau_fwhm, 'max_intensity': max_intensity})
+        flat_df.to_csv('test_df.csv')
+        with open('element_set.json', 'w') as f:
+            json.dump(str(self.element_set), f)
                 
 
 def sim_setup():
