@@ -26,6 +26,9 @@ from gaussian_beam_slice import gaussian_beam
 from optical_element_objects import Lens, QWP, HWP, PBC, Space
 
 
+def gauss_envelope(w_0, z_from_w_0, wavelength_center, index = 1):
+    z_R = np.pi * w_0 ** 2 * index / wavelength_center
+    return w_0 * np.sqrt(1 + (z_from_w_0 / z_R)**2)
 
 @dataclass
 class optical_layout:
