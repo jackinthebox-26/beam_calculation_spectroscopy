@@ -156,29 +156,24 @@ class gaussian_beam:
         logger.debug('Calculating {q_out=}')
         return q_out
 
-    def pass_ABCD(self,A, B, C, D):
+    def pass_ABCD(self, element):
         """Create a new spot from an ABCD matrix."""
+        A, B, C, D = element.get_ABCD()
+        logger.debug('Applying ABCD matrix.')
         q_out = self.apply_ABCD(A, B, C, D)
-        old_dict = self.reproduce_dict()
-        old_dict.pop('w_0', None)
-        old_dict['kwargs'].pop('z_from_w_0')
-        new_spot = self.from_q(q_out, **old_dict)
+        args, kwargs = self.reproduce_dict()
+        kwargs['z_from_w_0'] += element.width
+        
+        new_spot = self.from_q(q_out, *args, **kwargs)
         return new_spot
 
     def pass_element(self, element):
         """Create a new spot from an optical element."""
         logger.info(f'    Passing element of type {element.type}')
-        new_spot = self.pass_ABCD(*element.get_ABCD())
-        new_spot = new_spot.pass_pol(*element.get_jones_matrix())
-        return new_spot
 
-    def pass_free_space(self, distance, index=1):
-        """Create a new spot after propegating some distance."""
-        A = 1
-        B = distance / index
-        C = 0
-        D = 1
-        new_spot = self.pass_ABCD(A, B, C, D)
+        new_spot = self.pass_ABCD(element)
+        new_spot = new_spot.pass_pol(*element.get_jones_matrix())
+        new_spot = new_spot.pass_GDD(element.GDD)
         return new_spot
 
 
