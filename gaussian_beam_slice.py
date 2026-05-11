@@ -153,6 +153,7 @@ class gaussian_beam:
         """Apply an ABCD matrix to the current beam and determine the output q."""
         q = self.q_z
         q_out = (A * q + B) / (C * q + D)
+        logger.debug('Calculating {q_out=}')
         return q_out
 
     def pass_ABCD(self,A, B, C, D):
