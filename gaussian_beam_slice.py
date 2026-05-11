@@ -212,7 +212,9 @@ class gaussian_beam:
 
 
     @classmethod
-    def from_q(cls, q, wavelength_center, wavelength_fwhm, power_avg, kwargs=None):
+    def from_dict(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
+
         """Return an instance with the specified q."""
         if kwargs is None: kwargs = {}
         z_from_w_0 = q.real
