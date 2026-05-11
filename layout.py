@@ -1,11 +1,10 @@
 """ TODO
 Complete docs
-Break plotting into seperate file
-Turn this file into database creation
 optical setup in json or other config file
 
 Verify calculatoins while implementing test cases.
 
+Add optical elements to plots
 
 """
 
