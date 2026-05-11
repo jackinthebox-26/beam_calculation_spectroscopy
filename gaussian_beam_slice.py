@@ -1,20 +1,21 @@
 from dataclasses import dataclass
 import numpy as np
+import scipy as sp
 from loguru import logger
 @dataclass
 class gaussian_beam:
     """
     This class contains all information about the beam at a particular location along the optical path. This class calculates relevant properties as it interacts with free space and optical elements.
     """
-    wavelength_center: float 
-    wavelength_fwhm: float
-    power_avg: float
     w_0: float
+    power_avg: float = 1
+    wavelength_fwhm: float = 10e-9
+    wavelength_center: float = 256e-9 
     z_from_w_0: float = 0
-    psi: float = 0
     hpol: float = 0  # Input horizontal polarization
     vpol: float = 1  # 
     f_rep: float = 75e6
+    tau_fwhm: float = 0
 
     def __post_init__(self):
         self.z_R = self.rayleigh_range()
