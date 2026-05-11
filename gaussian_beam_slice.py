@@ -25,7 +25,8 @@ class gaussian_beam:
         self.I_max = self.max_intensity()
         self.vec = np.array([[self.hpol],[self.vpol]])
         self.gouy = self.gouy_phase()
-
+        self.tau_lim = self.limited_pulse_length()
+        if self.tau_fwhm == 0: self.tau_fwhm = self.tau_lim
     def __str__(self):
         width = 50
         def outline(width=width):
@@ -43,6 +44,7 @@ class gaussian_beam:
         string = formatting(outline())
         string += add_line(self, 'wavelength_center', unit='nm', scale = 1e9)
         string += add_line(self, 'wavelength_fwhm', unit='nm', scale = 1e9)
+        string += add_line(self, 'tau_lim', unit='fs', scale = 1e15)
         string += midline
         string += add_line(self, 'power_avg', unit='W')
         string += add_line(self, 'w_0', unit='mm', scale=1e3)
@@ -105,6 +107,27 @@ class gaussian_beam:
         gouy = np.arctan(self.z_from_w_0 / self.z_R)
         logger.debug(f'Calculate {gouy=}')
         return gouy
+
+    def bandwidth_hz(self):
+        """Calculate the bandwidth of the pulse in Hz."""
+        c = sp.constants.c
+        lambda_0 = self.wavelength_center
+        lambda_fwhm = self.wavelength_fwhm
+        nu_start = c / (lambda_0 + lambda_fwhm/2)
+        nu_stop = c / (lambda_0 - lambda_fwhm/2)
+        frequency_fwhm = abs(nu_stop - nu_start)
+        logger.debug(f'Calculate {frequency_fwhm=}')
+        return frequency_fwhm
+
+    def limited_pulse_length(self):
+        """Calculate the shortest possible pulse for the spectrum (bandwidth-limited)."""
+        frequency_fwhm = self.bandwidth_hz()
+        tau_fwhm = 0.441 / frequency_fwhm
+        logger.debug(f'Calculate {tau_fwhm=}')
+        return tau_fwhm
+
+
+
 
     def reproduce_dict(self):
         """This creates a dictionary which can re-create the current instance."""
