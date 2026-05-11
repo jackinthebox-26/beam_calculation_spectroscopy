@@ -215,23 +215,25 @@ class gaussian_beam:
     def from_dict(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
+    @classmethod
+    def from_q(cls, q, *args, **kwargs):
         """Return an instance with the specified q."""
-        if kwargs is None: kwargs = {}
+        wavelength_center = kwargs.get('wavelength_center', cls.wavelength_center)
         z_from_w_0 = q.real
-        z_R = q.imag
-
-        w_0 = np.sqrt(z_R * wavelength_center/ np.pi)
-
-        return cls(wavelength_center, wavelength_fwhm, power_avg, w_0, z_from_w_0=z_from_w_0, **kwargs) 
+        w_0 = np.sqrt(q.imag * wavelength_center/ np.pi)
+        kwargs['z_from_w_0'] = z_from_w_0
+        args += w_0
+        return cls.from_dict(w_0, **kwargs) 
 
 
     @classmethod
-    def from_pol(cls,new_vec, wavelength_center, wavelength_fwhm, power_avg, w_0, kwargs=None):
+    def from_pol(cls, new_vec, *args, **kwargs):
         """Return an instance with the specified jones vector."""
-        if kwargs is None: kwargs = {}
-        hpol = new_vec[0, 0]
-        vpol = new_vec[1, 0]
-        return cls(wavelength_center, wavelength_fwhm, power_avg, w_0, hpol=hpol, vpol=vpol, **kwargs)
+        kwargs['hpol'] = new_vec[0, 0]
+        kwargs['vpol'] = new_vec[1, 0]
+        return cls.from_dict(*args, **kwargs)
+
+
 
 def find_norm(vec):
     return np.abs(vec[0, 0]) ** 2 + np.abs(vec[1, 0]) ** 2
@@ -239,7 +241,18 @@ def main():
     from my_logging import configure_logging
     configure_logging()
     logger.info('Running gaussian_beam_slice.py as __main__.')
-    print(gaussian_beam(256e-9, 10e-9, 1, 0.1e-3))
+    print(gaussian_beam(0.1e-3))
+    q = 1j
+    wavelength_center = 256e-9
+    w_0 = 1e-3
+    logger.info('Testing q class method')
+    test = gaussian_beam.from_q(q, w_0)
+
+    vec = np.array([[1],[0]])
+    logger.info('Testing GDD class method')
+    test = gaussian_beam.from_pol(vec, w_0)
+    logger.info('Testing pass GDD')
+    test.pass_GDD(1)
 
 
 if __name__ == "__main__":
