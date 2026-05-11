@@ -198,6 +198,16 @@ class gaussian_beam:
         new_spot = self.from_pol(new_vec, *args, **kwargs)
         return new_spot
                           
+    def pass_GDD(self, GDD):
+        logger.debug('Applying GDD calculation to the pulse')
+        tau_lim = self.tau_lim
+        tau_fwhm_old = self.tau_fwhm
+        tau_fwhm_new = tau_fwhm_old * np.sqrt(1 + 4 * GDD ** 2 / (tau_lim ** 4))
+        logger.debug(f'Calculating {tau_fwhm_new=}')
+        args, kwargs = self.reproduce_dict()
+        kwargs['tau_fwhm'] = tau_fwhm_new
+        new_spot = self.from_dict(*args, **kwargs)
+        return new_spot
 
 
 
