@@ -4,8 +4,9 @@ import json
 
 from loguru import logger
 
-@dataclass
+    
 
+@dataclass
 class optical_element:
     """This is the container class for all optical elements and loads their properties."""
     configfile: str 
@@ -33,6 +34,7 @@ class optical_element:
 class Space:
     width: float
     index: float = 1
+    GDD: float = 0
     def __post_init__(self):
         self.type = 'Space'
         
@@ -89,8 +91,8 @@ class HWP(optical_element):
 
     def get_ABCD(self):
         A = 1
-        B = 0
-        C = B
+        B = self.width
+        C = 0
         D = A
         return (A, B, C, D)
 
@@ -111,8 +113,8 @@ class QWP(optical_element):
         return f'QWP(angle={self.angle:.3f})'
     def get_ABCD(self):
         A = 1
-        B = 0
-        C = B
+        B = self.width
+        C = 0
         D = A
         return (A, B, C, D)
 
@@ -135,8 +137,8 @@ class PBC(optical_element):
 
     def get_ABCD(self):
         A = 1
-        B = 0
-        C = B
+        B = self.width
+        C = 0
         D = A
         return (A, B, C, D)
     def get_jones_matrix(self):
