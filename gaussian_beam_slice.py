@@ -83,7 +83,7 @@ class gaussian_beam:
         if self.z_from_w_0 != 0:
             R = self.z_from_w_0 * (1 + (self.z_R / self.z_from_w_0) ** 2)
         else:
-            logger.debug('Divide by zero issue resolved')
+            logger.warning('Divide by zero issue resolved by setting R=np.inf')
             R = np.inf
         logger.debug(f'Calculate {R=}')
         return R
