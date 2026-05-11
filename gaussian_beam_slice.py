@@ -186,15 +186,16 @@ class gaussian_beam:
 
     def pass_pol(self, A, B, C, D):
         """Create a new spot from a Jones matrix."""
+        logger.debug('Applying the jones calculus to the polarization')
         new_vec = self.jones_calc(A, B, C, D)
-        old_dict = self.reproduce_dict()
-        old_dict['kwargs'].pop('hpol')
-        old_dict['kwargs'].pop('vpol')
+        args, kwargs = self.reproduce_dict()
+        kwargs.pop('hpol')
+        kwargs.pop('vpol')
         if (old_norm := find_norm(new_vec)) < 0.999:  # This decreases the power due to polarization filtering.
             P_new = self.power_avg * old_norm
-            old_dict['power_avg'] = P_new
+            kwargs['power_avg'] = P_new
             new_vec /= np.sqrt(old_norm)
-        new_spot = self.from_pol(new_vec, **old_dict)
+        new_spot = self.from_pol(new_vec, *args, **kwargs)
         return new_spot
                           
 
