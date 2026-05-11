@@ -45,17 +45,14 @@ class optical_layout:
         logger.info('Begin intiating dataframe.')
         dz = []
         for index, element in enumerate(self.element_set):
-            if isinstance(element, (int, float)):
-                dz.append(element)
-            else:
-                dz.append(element.width)
-        z = []
+            dz.append(element.width)
+        z = [0]
+        logger.info(f'{dz=}')
         for i, new_z in enumerate(dz):
-            if i == 0:
-                z.append(new_z)
-            else:
-                z.append(z[i-1] + new_z)
-        df = pd.DataFrame({'z': z, 'dz': dz, 'element': self.element_set})  
+            z.append(z[i] + new_z)
+        z.pop()
+        logger.info(f'{z=}')
+        df = pd.DataFrame({'z': z, 'element': self.element_set})  
         logger.info('Finished initiating dataframe.')
         return df
 
@@ -70,10 +67,7 @@ class optical_layout:
             elem = row['element']
             old_beam = self.df.at[index, 'init_beam_profile']
 
-            if isinstance(elem, (int, float)):
-                new_beam = old_beam.pass_free_space(elem)
-            else:
-                new_beam = old_beam.pass_element(elem)
+            new_beam = old_beam.pass_element(elem)
 
             self.df.at[index, 'final_beam_profile'] = new_beam
             if index < len(self.df.index) - 1:
@@ -85,9 +79,19 @@ class optical_layout:
             self.df.at[index, 'w_z_final'] = new_beam.w_z
             self.df.at[index, 'w_z_start'] = old_beam.w_z
 
+            self.df.at[index, 'tau_fwhm_init'] = old_beam.tau_fwhm
+            self.df.at[index, 'tau_fwhm_final'] = new_beam.tau_fwhm
+
+            self.df.at[index, 'type'] = elem.type
+            self.df.at[index, 'w_0'] = old_beam.w_0
+            self.df.at[index, 'z_from_w_0_start'] = old_beam.z_from_w_0
+            self.df.at[index, 'z_from_w_0_final'] = new_beam.z_from_w_0
 
             self.df.at[index, 'power_avg_final'] = new_beam.power_avg
+            self.df.at[index, 'width'] = elem.width
+            self.df.at[index, 'max_intensity'] = new_beam.I_max
         logger.info('Finished row calculations')
+        logger.info(f'Columns {self.df.columns}')
 
     def make_flat_df(self):
         step = 0.005
