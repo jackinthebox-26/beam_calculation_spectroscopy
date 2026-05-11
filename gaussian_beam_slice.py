@@ -181,7 +181,7 @@ class gaussian_beam:
         """Calculate a new jones vector from a jones matrix."""
         matrix = np.array([[A, B], [C, D]])
         new_vec = np.matmul(matrix, self.vec)
-
+        logger.debug('Calculating {new_vec=}')
         return new_vec
 
     def pass_pol(self, A, B, C, D):
