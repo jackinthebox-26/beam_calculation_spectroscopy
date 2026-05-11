@@ -94,11 +94,15 @@ class gaussian_beam:
         q = self.z_from_w_0 + self.z_R * 1j
         logger.debug(f'Calculate {q=}')
         return q
-
+    def pulse_energy(self):
+        """Calculate the energy in a single pulse."""
+        E_pulse = self.power_avg / self.f_rep
+        logger.debug(f'Calculate {E_pulse=}')
 
     def max_intensity(self):
         """Calculate the maximum intensity of the gaussian beam."""
         I = 2 * self.power_avg / (np.pi * self.w_z ** 2)
+        I = I / self.tau_fwhm
         logger.debug(f'Calculate {I=}')
         return I
 
