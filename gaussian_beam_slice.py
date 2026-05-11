@@ -135,18 +135,17 @@ class gaussian_beam:
 
     def reproduce_dict(self):
         """This creates a dictionary which can re-create the current instance."""
-        out_dict = {}
-        out_dict['wavelength_center'] = self.wavelength_center
-        out_dict['wavelength_fwhm'] = self.wavelength_fwhm
-        out_dict['power_avg'] = self.power_avg
-        out_dict['w_0'] = self.w_0
-        out_dict['kwargs']={}
-        out_dict['kwargs']['z_from_w_0'] = self.z_from_w_0
-        out_dict['kwargs']['psi'] = self.psi
-        out_dict['kwargs']['hpol'] = self.hpol
-        out_dict['kwargs']['vpol'] = self.vpol
+        args = {self.w_0, }
+        kwargs = {}
+        kwargs['wavelength_center'] = self.wavelength_center
+        kwargs['wavelength_fwhm'] = self.wavelength_fwhm
+        kwargs['power_avg'] = self.power_avg
+        kwargs['z_from_w_0'] = self.z_from_w_0
+        kwargs['hpol'] = self.hpol
+        kwargs['vpol'] = self.vpol
+        kwargs['tau_fwhm'] = self.tau_fwhm
 
-        return out_dict
+        return args, kwargs
 
 
 
