@@ -154,16 +154,44 @@ class optical_layout:
 def sim_setup():
     initiate_data()
     folder = '../config/'
-    
-    space_0_2 = Space(0.2)
+    space_1 = 1.2  # Space before collimating lens
+    space_2 = 0.1  # Space between coll_lens and the hwp
+    space_3 = 0.02  # Space betwwn hwp and pbc
+    space_4 = 0.02  # Space between the pbc and the qwp
+    space_5 = 1  # Space between the qwp and the focusing lens 1
+    space_6 = 0.2  # Space between the focusing lens 1 and focusing lens 2
+    space_7 = 4  # Space between focusing lens 2 and focusing lens 2
     coll_lens = Lens(folder + 'config_coll_lens.json')
     qwp = QWP(folder + 'config_qwp.json')
     pbc = PBC(folder + 'config_pbc.json')
     hwp = HWP(folder + 'config_hwp.json')
-    shape_lens_1 = Lens(folder + 'config_shape_lens_1.json')
-    element_set = ( hwp,space_0_2,pbc,space_0_2,  qwp,space_0_2,shape_lens_1,space_0_2, shape_lens_1 , space_0_2)
+    focusing_lens_1 = Lens(folder + 'config_lens_thorlabs_LA4380_UV.json')
+    focusing_lens_2 = Lens(folder + 'config_lens_thorlabs_LA4380_UV.json')
+    element_set = (Space(space_1), 
+                   hwp,
+                   Space(space_3),
+                   pbc, 
+                   Space(space_4),
+                   qwp, 
+                   Space(space_5), 
+                   focusing_lens_1, 
+                   Space(space_6), 
+                   focusing_lens_2, 
+                   Space(space_7),
+                   focusing_lens_2,
+                   Space(space_6),
+                   focusing_lens_1,
+                   Space(space_5),
+                   qwp,
+                   Space(space_4),
+                   pbc,
+                   Space(space_3),
+                   hwp,
+                   Space(space_1)
 
-    gauss = gaussian_beam(256e-9, 10e-9, 1, 0.1e-3)
+                   )
+
+    gauss = gaussian_beam(1e-3, z_from_w_0=0.1)
 
 
     ol = optical_layout(gauss, element_set)
