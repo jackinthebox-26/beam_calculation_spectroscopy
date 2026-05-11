@@ -5,3 +5,10 @@
 
 # venv
 venv/
+
+
+# other
+*.zip
+*.png
+*.csv
+*.json
