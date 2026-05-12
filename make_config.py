@@ -1,25 +1,32 @@
 """
 This file creates the configuration files for the optical elements.
-"""
 
+This has to be loaded once as it creates the json files for the subsequest calculations.
+
+
+
+"""
+# Standard library imports
 import os
-import numpy as np
 import json
+
+# Other public imports
+import numpy as np
 from loguru import logger
 
 CONFIG_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'config')
 
 def make_configfile(config):
-
     """This method creates a config file from a config dictionary."""
     logger.info(f'    Creating {config["name"]} config')
+
     file = config['filename']
     with open(CONFIG_FOLDER + file, 'w') as f:
         json.dump(config, f, indent=4)
+
     logger.info(f'    Done creating {config["name"]} config')
 
 def initiate_thorlabs_100_mm_convex_UV_LA4380():
-    logger.info('Begining thorlabs config')
     lens_thorlabs_LA4380_UV = {'name': 'Thorlabs 100 mm Convex UV LA4380',
                                'filename': 'config_lens_thorlabs_LA4380_UV.json',
                                'type': 'lens',
@@ -31,12 +38,23 @@ def initiate_thorlabs_100_mm_convex_UV_LA4380():
                                'GVD': 36e-27 # s^2/m
                                 }
     make_configfile(lens_thorlabs_LA4380_UV)
-    logger.info('Done thorlabs config.')
+
+def initiate_thorlabs_UM10_Y4HP_turning_mirror():
+    data = {'name': 'Thorlabs UV turning mirror UM10-Y4HP',
+            'filename': 'turning_mirror_thorlabs_UM10_Y4HP.json',
+            'type': 'mirror'}
+    make_configfile(data)
+
+
+def initiate_tower_QWP():
+    data = {'name': 'Tower optical quarter wave plate',
+            'filename': 'tower_optical_qwp.json',
+            'width': 1e-3}
+    make_configfile(data)
 
 def initiate_data():
     """This method creates the relevant config files."""
     logger.info('Begining config initiation')
-    folder = '../config/'
     coll_lens = {'name': 'collimating lens',
                  'filename': 'config_coll_lens.json',
                  'type': 'lens',
@@ -75,10 +93,15 @@ def initiate_data():
 
     logger.info('Done creating config')
 
-def main():
+
+
+def make_json_files():
     initiate_data()
     initiate_thorlabs_100_mm_convex_UV_LA4380()
-    with open('../config/config_qwp.json', 'r') as f:
-        data = json.load(f)
+    initiate_thorlabs_UM10_Y4HP_turning_mirror()
+    initiate_tower_QWP()
+
+def main():
+    make_json_files()
 if __name__ == "__main__":
     main()
