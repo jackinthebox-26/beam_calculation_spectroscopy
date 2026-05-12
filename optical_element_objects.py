@@ -1,7 +1,12 @@
-import numpy as np
+"""
+This file contains the classes for all the optical elements that gives control over the ABCD and jones matrix.
+"""
+# Standard Library imports  
 from dataclasses import dataclass
 import json
 
+# Other public imports
+import numpy as np
 from loguru import logger
 
     
@@ -32,6 +37,7 @@ class optical_element:
         return config
 @dataclass
 class Space:
+    """This class contains all the info required for a space element."""
     width: float
     index: float = 1
     GDD: float = 0
