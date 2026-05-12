@@ -18,7 +18,7 @@ def make_configfile(config):
         json.dump(config, f, indent=4)
     logger.info(f'    Done creating {config["name"]} config')
 
-def initiate_thorlabs():
+def initiate_thorlabs_100_mm_convex_UV_LA4380():
     logger.info('Begining thorlabs config')
     lens_thorlabs_LA4380_UV = {'name': 'Thorlabs 100 mm Convex UV LA4380',
                                'filename': 'config_lens_thorlabs_LA4380_UV.json',
@@ -71,13 +71,13 @@ def initiate_data():
 
     configs_to_make = (coll_lens, beam_shape_lens_1, qwp, pbc, hwp)
     for config in configs_to_make:
-        make_configfile(config, folder)
+        make_configfile(config)
 
     logger.info('Done creating config')
 
 def main():
     initiate_data()
-    initiate_thorlabs()
+    initiate_thorlabs_100_mm_convex_UV_LA4380()
     with open('../config/config_qwp.json', 'r') as f:
         data = json.load(f)
 if __name__ == "__main__":
