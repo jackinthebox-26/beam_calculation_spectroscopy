@@ -2,22 +2,24 @@
 This file creates the configuration files for the optical elements.
 """
 
+import os
 import numpy as np
 import json
 from loguru import logger
 
-def make_configfile(config, folder):
+CONFIG_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'config')
+
+def make_configfile(config):
 
     """This method creates a config file from a config dictionary."""
     logger.info(f'    Creating {config["name"]} config')
     file = config['filename']
-    with open(folder + file, 'w') as f:
+    with open(CONFIG_FOLDER + file, 'w') as f:
         json.dump(config, f, indent=4)
     logger.info(f'    Done creating {config["name"]} config')
 
 def initiate_thorlabs():
     logger.info('Begining thorlabs config')
-    folder = '../config/'
     lens_thorlabs_LA4380_UV = {'name': 'Thorlabs 100 mm Convex UV LA4380',
                                'filename': 'config_lens_thorlabs_LA4380_UV.json',
                                'type': 'lens',
@@ -28,7 +30,7 @@ def initiate_thorlabs():
                                'aperture': 5.4e-3,  # m
                                'GVD': 36e-27 # s^2/m
                                 }
-    make_configfile(lens_thorlabs_LA4380_UV, folder)
+    make_configfile(lens_thorlabs_LA4380_UV)
     logger.info('Done thorlabs config.')
 
 def initiate_data():
